@@ -1,0 +1,9 @@
+---
+
+router ospf 7
+network {{ network_wan }} {{network_subnet_mask1}}
+interface lo0
+ip address {{ loopback_address }} {{subnet_mask}}
+no shutdown
+
+

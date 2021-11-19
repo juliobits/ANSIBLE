@@ -1,0 +1,15 @@
+---
+- name: "playbook 1 :obtener running-config por ssh y muestra en pantalla el resultado" 
+  hosts: LAB_GNS3
+  connection: network_cli
+  gather_facts: no
+  tasks:
+    - name: "tarea 1: obtener la running-config  por ssh"
+      ios_command:
+        commands: "show running-config"
+      register: cli_result
+        
+        
+    - name: "tarea 2: muestra en pantalla el resultado"
+      debug:
+        msg: "{{ cli_result }}"

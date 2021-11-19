@@ -1,0 +1,4 @@
+---
+
+username: "{{ local_username }}"
+password: "{{ local_password }}"
