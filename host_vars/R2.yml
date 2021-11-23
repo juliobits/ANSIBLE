@@ -1,1 +1,21 @@
 ---
+  
+configs:
+  - name: " variables de R2 "
+    if_lan: 0/0
+    address_lan: 192.168.2.1
+    subnet_mask_lan: 255.255.255.0
+    if_wan1: 2/1
+    address_wan1: 10.0.0.2
+    subnet_mask_wan: 255.255.255.252
+    if_wan2: 2/3
+    address_wan2: 10.0.0.6
+    range_begin: 192.168.2.5
+    range_finish: 192.168.2.100
+    pool_name: R2-pool
+    network_lan: 192.168.2.0
+    wildcard_lan: 0.0.0.255
+    network_wan1: 10.0.0.0
+    network_wan2: 10.0.0.4
+    wildcard_wan: 0.0.0.3
+  

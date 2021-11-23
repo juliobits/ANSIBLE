@@ -6,3 +6,4 @@ R3 ansible_host=192.168.56.3
 [LAB_GNS3:vars]
 ansible_network_os=ios
 ansible_interpeter_python = /usr/bin/python3
+discovered_interpreter_python = /usr/bin/python3

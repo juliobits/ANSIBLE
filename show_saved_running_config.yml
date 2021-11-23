@@ -16,21 +16,14 @@
         msg: "{{ cli_result }}"
    
         
-    - name: "tarea 3: cambia el formato a XML para facil visualizacion"
-      xml:
-        xmlstring: "{{ cli_result.stdout[0] }}"
-        pretty_print: true
-      register: pretty_config
-      changed_when: false
-
-    - name: "tarea 4: creando una carpeta para guardar la running-config"
+    - name: "tarea 3: creando una carpeta para guardar la running-config"
       file:
         path: "salida_running_config"
         state: directory
       run_once: true
     
 
-    - name: "tarea 5: creando los archivos para guardar la running-config por Router"
+    - name: "tarea 4: creando los archivos para guardar la running-config por Router"
       copy: 
-        content: "{{ pretty_config.xmlstring }}"
-        dest: "salida_running_config/{{ inventory_hostname }}.xml"
+        content: "{{ cli_result.stdout[0] }}\n"
+        dest: "salida_running_config/{{ inventory_hostname }}.txt"

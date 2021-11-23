@@ -1,3 +1,34 @@
 ---
 
--
+- name: "playbook 1: configurar toda la red lan y wan y dhcp"
+  hosts: LAB_GNS3
+  connection: network_cli
+  gather_facts: no
+
+  tasks:
+
+    - name: "Tarea 1: aplicar la configuracion de OSPF, DHCP y direccionamiento IP via SSH/CLI"
+      ios_config:
+        src: "templates/ospf_template_config.j2"
+        save_when: changed
+      notify: config_changed
+      register: cli__result
+
+    - name: "tarea 2: creando una carpeta para guardar la running-config"
+      file:
+        path: "salida_ospf_dhcp_interfaces_config"
+        state: directory
+      run_once: true
+    
+
+    - name: "tarea 3: creando los archivos para guardar la running-config por Router"
+      copy: 
+        content: "{{ cli_result.stdout[0] }}\n"
+        dest: "salida_ospf_dhcp_interfaces_config/{{ inventory_hostname }}.txt"
+
+  handlers:
+
+    - name: "handler 1: Muestrame en pantalla si hubo cambios en los dispositivos"
+      listen: debug
+      debug:
+        msg: "{{ cli_result.commands }}"
