@@ -1,0 +1,166 @@
+Building configuration...
+
+Current configuration : 2252 bytes
+!
+! Last configuration change at 21:31:00 UTC Wed Nov 24 2021 by juliocqq
+upgrade fpd auto
+version 15.2
+service timestamps debug datetime msec
+service timestamps log datetime msec
+service password-encryption
+!
+hostname R3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+no aaa new-model
+no ip icmp rate-limit unreachable
+!
+!
+!
+ip dhcp excluded-address 192.168.3.1 192.168.3.5
+!
+ip dhcp pool R3-pool
+ network 192.168.3.0 255.255.255.0
+ default-router 192.168.3.1 
+ dns-server 8.8.8.8 
+ domain-name ccna-lab.com
+ lease 2
+!
+!
+!
+no ip domain lookup
+ip domain name ccna-lab.com
+ip cef
+login block-for 30 attempts 2 within 120
+no ipv6 cef
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username juliocqq privilege 15 secret 5 $1$UAMB$TRa2mdi3Bf7dDwRiChVYy0
+!
+redundancy
+!
+!
+ip tcp synwait-time 5
+ip ssh time-out 75
+ip ssh authentication-retries 2
+ip ssh version 2
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 192.168.3.1 255.255.255.0
+ duplex half
+!
+interface GigabitEthernet1/0
+ ip address 192.168.56.3 255.255.255.0
+ negotiation auto
+!
+interface Serial2/0
+ ip address 10.0.0.2 255.255.255.252
+ serial restart-delay 0
+!
+interface Serial2/1
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial2/2
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial2/3
+ ip address 10.0.0.6 255.255.255.252
+ serial restart-delay 0
+!
+interface Serial2/4
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial2/5
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial2/6
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface Serial2/7
+ no ip address
+ shutdown
+ serial restart-delay 0
+!
+interface POS3/0
+ no ip address
+ shutdown
+!
+router ospf 7
+ network 10.0.0.0 0.0.0.3 area 0
+ network 10.0.0.4 0.0.0.3 area 0
+ network 192.168.3.0 0.0.0.255 area 0
+!
+ip forward-protocol nd
+no ip http server
+no ip http secure-server
+!
+!
+!
+!
+no cdp log mismatch duplex
+!
+!
+!
+control-plane
+!
+!
+!
+mgcp profile default
+!
+!
+!
+gatekeeper
+ shutdown
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ login local
+ transport input ssh
+line vty 5 15
+ login local
+ transport input ssh
+!
+!
+end

@@ -3,7 +3,9 @@
   hosts: LAB_GNS3
   connection: network_cli
   gather_facts: no
+  
   tasks:
+
     - name: "tarea 1: obtener la running-config  por ssh"
       ios_command:
         commands: "show running-config"

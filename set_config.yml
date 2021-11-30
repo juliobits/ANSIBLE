@@ -9,14 +9,14 @@
 
     - name: "Tarea 1: aplicar la configuracion de OSPF, DHCP y direccionamiento IP via SSH/CLI"
       ios_config:
-        src: "templates/ospf_template_config.j2"
+        src: "templates/set_config.j2"
         save_when: changed
       notify: config_changed
-      register: cli__result
+      register: cli_result
 
     - name: "tarea 2: creando una carpeta para guardar la running-config"
       file:
-        path: "salida_ospf_dhcp_interfaces_config"
+        path: "salida_set_config"
         state: directory
       run_once: true
     
@@ -24,7 +24,7 @@
     - name: "tarea 3: creando los archivos para guardar la running-config por Router"
       copy: 
         content: "{{ cli_result.stdout[0] }}\n"
-        dest: "salida_ospf_dhcp_interfaces_config/{{ inventory_hostname }}.txt"
+        dest: "salida_set_config/{{ inventory_hostname }}.txt"
 
   handlers:
 

@@ -1,0 +1,27 @@
+{% for config in configs %}
+interface FastEthernet {{ config.if_lan }}
+ip address {{ config.address_lan }} 
+no shutdown
+interface Serial {{ config.if_wan1 }}
+ip address {{ config.address_wan1 }} 
+no shutdown
+interface Serial {{ config.if_wan2 }}
+ip address {{ config.address_wan2 }} 
+no shutdown
+ip dhcp excluded-address {{ config.excluded_pool }} 
+ip dhcp pool {{ config.name_pool }}
+network {{ config.network_pool }} 
+default-router {{ config.default_rtr }}
+dns-server 8.8.8.8
+domain-name ccna-lab.com
+lease 2
+end
+configure terminal
+{%  for ospf_subnets in config.ospf_process %}
+  network {{ ospf_subnets }} 
+{%  endfor %}
+{% endfor %}
+
+
+
+
