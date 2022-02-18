@@ -18,7 +18,9 @@ lease 2
 end
 configure terminal
 {{ config.ospf_process}}
-network {{ config.network_ospf }} 
+{%  for config in configs %}
+  network {{ config.network_ospf }} 
+{%  endfor %}
 {% endfor %}
 
 
