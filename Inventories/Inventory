@@ -1,9 +1,10 @@
 [LAB_GNS3]
-R1 ansible_host=192.168.56.1 ansible_network_os=cisco.ios.ios
-R2 ansible_host=192.168.56.2 ansible_network_os=cisco.ios.ios
-R3 ansible_host=192.168.56.3 ansible_network_os=cisco.ios.ios
+R1 ansible_host=192.168.56.1 
+R2 ansible_host=192.168.56.2 
+R3 ansible_host=192.168.56.3 
 
-
+[LAB_GNS3:vars]
+ansible_network_os=cisco.ios.ios
 
 
 
