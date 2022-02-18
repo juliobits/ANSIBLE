@@ -1,8 +1,4 @@
 ---
 
-ansible_network_os: cisco.ios.ios
-ansible_user: "{{ local_username }}"
-ansible_password: "{{ local_password }}"
-ansible_connection: ansible.netcommon.network_cli
-ansible_become: yes
-ansible_become_method: enable
+username: "{{ local_username }}"
+password: "{{ local_password }}"

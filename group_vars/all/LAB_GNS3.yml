@@ -1,5 +1,6 @@
 ---
 
-ansible_network_os: cisco.ios.ios
+ansible_network_os: "ios"
 ansible_user: "{{ local_username }}"
 ansible_password: "{{ local_password }}"
+
