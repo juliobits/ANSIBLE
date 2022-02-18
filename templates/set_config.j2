@@ -19,7 +19,7 @@ end
 configure terminal
 {{ config.ospf_process}}
 {%  for config in configs %}
-  network {{ config.network_ospf }} 
+network {{ config.network_ospf }} 
 {%  endfor %}
 {% endfor %}
 
