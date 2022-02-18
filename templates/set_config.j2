@@ -8,6 +8,7 @@ no shutdown
 interface Serial {{ config.if_wan2 }}
 ip address {{ config.address_wan2 }} 
 no shutdown
+end
 ip dhcp excluded-address {{ config.excluded_pool }} 
 ip dhcp pool {{ config.name_pool }}
 network {{ config.network_pool }} 
@@ -17,11 +18,12 @@ domain-name ccna-lab.com
 lease 2
 end
 configure terminal
-{{ config.ospf_process}}
+{{ config.ospf_process }}
 {%  for config in configs %}
 network {{ config.network_ospf }} 
 {%  endfor %}
 {% endfor %}
+
 
 
 
