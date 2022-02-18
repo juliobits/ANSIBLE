@@ -1,4 +1,5 @@
 ---
 
-username: "{{ local_username }}"
-password: "{{ local_password }}"
+ansible_network_os: "ios"
+ansible_user: "{{ local_username }}"
+ansible_password: "{{ local_password }}"
