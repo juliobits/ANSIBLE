@@ -17,7 +17,7 @@ domain-name ccna-lab.com
 lease 2
 end
 configure terminal
-{%  for config.network_ospf in ospf_process %}
+{%  for network_ospf in configs.ospf_process %}
   network {{ network_ospf }} 
 {%  endfor %}
 {% endfor %}
