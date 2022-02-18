@@ -1,3 +1,4 @@
+configure terminal
 {% for config in configs %}
 interface FastEthernet {{ config.if_lan }}
 ip address {{ config.address_lan }} 
@@ -17,11 +18,12 @@ domain-name ccna-lab.com
 lease 2
 end
 configure terminal
-{{ config.ospf_process }}
-{%  for config_subnet in ospf_process %}
-network {{ config_subnet.network_ospf }} 
-{%  endfor %}
 {% endfor %}
+{{ ospf_process }}
+{% for config_subnet in ospf_process %}
+network {{ config_subnet.network_ospf }} 
+{% endfor %}
+
 
 
 
