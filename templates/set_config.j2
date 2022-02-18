@@ -16,8 +16,8 @@ ip dhcp pool {{ config.name_pool }}
  domain-name ccna-lab.com
  lease 2
 {{ config.ospf_process }}
-{%  for config in configs.ospf_process %}
- network {{ network_ospf }} 
+{%  for config in configs %}
+ network {{ config.network_ospf }} 
 {%  endfor %}
 {% endfor %}
 
