@@ -17,11 +17,6 @@ dns-server 8.8.8.8
 domain-name ccna-lab.com
 lease 2
 end
-configure terminal
-{{ config.ospf_process }}
-{%  for config in configs %}
-network {{ config.network_ospf }} 
-{%  endfor %}
 {% endfor %}
 
 
