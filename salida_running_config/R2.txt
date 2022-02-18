@@ -1,8 +1,8 @@
 Building configuration...
 
-Current configuration : 2253 bytes
+Current configuration : 2145 bytes
 !
-! Last configuration change at 21:31:00 UTC Wed Nov 24 2021 by juliocqq
+! Last configuration change at 02:43:06 UTC Fri Feb 18 2022 by juliocqq
 upgrade fpd auto
 version 15.2
 service timestamps debug datetime msec
@@ -117,11 +117,6 @@ interface POS3/0
  no ip address
  shutdown
 !
-router ospf 7
- network 10.0.0.4 0.0.0.3 area 0
- network 10.0.0.8 0.0.0.3 area 0
- network 192.168.2.0 0.0.0.255 area 0
-!
 ip forward-protocol nd
 no ip http server
 no ip http secure-server
@@ -162,5 +157,6 @@ line vty 5 15
  login local
  transport input ssh
 !
+netconf ssh
 !
 end
