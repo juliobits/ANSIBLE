@@ -8,20 +8,16 @@ no shutdown
 interface Serial {{ config.if_wan2 }}
 ip address {{ config.address_wan2 }} 
 no shutdown
-end
-configure terminal
 ip dhcp excluded-address {{ config.excluded_pool }} 
 ip dhcp pool {{ config.name_pool }}
-network {{ config.network_pool }} 
-default-router {{ config.default_rtr }}
-dns-server 8.8.8.8
-domain-name ccna-lab.com
-lease 2
-end
-configure terminal
+ network {{ config.network_pool }} 
+ default-router {{ config.default_rtr }}
+ dns-server 8.8.8.8
+ domain-name ccna-lab.com
+ lease 2
 {{ config.ospf_process }}
 {%  for config in configs %}
-network {{ config.network_ospf }} 
+ network {{ config.network_ospf }} 
 {%  endfor %}
 {% endfor %}
 
