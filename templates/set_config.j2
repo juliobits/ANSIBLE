@@ -17,7 +17,7 @@ ip dhcp pool {{ config.name_pool }}
  lease 2
 {{ config.ospf_process }}
 {%  for network_ospf in config.ospf_process %}
-  network {{ network_ospf }} 
+ network {{ network_ospf }} 
 {%  endfor %}
 {% endfor %}
 
