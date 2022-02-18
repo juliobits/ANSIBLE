@@ -9,7 +9,7 @@ configs:
     if_wan2: "2/0"
     address_wan2: "10.0.0.1 255.255.255.252"
     excluded_pool: "192.168.1.1 192.168.1.5"
-    name_pool: "R3-pool"
+    name_pool: "R1-pool"
     network_pool: "192.168.1.0 255.255.255.0"
     default_rtr: "192.168.1.1"
     ospf_process: "router ospf 7"
