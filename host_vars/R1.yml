@@ -1,6 +1,6 @@
 ---  
 configs:
-  - name: "variables de R1 para direccionamiento ip"
+  - name: "variables de R2 para direccionamiento ip"
     if_lan: "0/0"
     address_lan: "192.168.1.1 255.255.255.0"
     if_wan1: "2/1"

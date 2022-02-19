@@ -1,7 +1,7 @@
 ---
 
 - name: "playbook 1: configurar toda la red lan y wan y dhcp"
-  hosts: LAB_GNS3
+  hosts: R1
   connection: network_cli
   gather_facts: no
 

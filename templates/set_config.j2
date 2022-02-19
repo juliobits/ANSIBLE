@@ -1,5 +1,4 @@
 {% for config in configs %}
-configure terminal
 interface FastEthernet {{ config.if_lan }}
 ip address {{ config.address_lan }} 
 no shutdown
@@ -16,11 +15,9 @@ ip dhcp pool {{ config.name_pool }}
  dns-server 8.8.8.8
  domain-name ccna-lab.com
  lease 2
-end
-configure terminal 
 router ospf {{ config.ospf_process }}
 {%  for subnets in config.network_ospf %}
-  network {{ subnets }} 
+ network {{ subnets }} 
 {%  endfor %}
 {% endfor %}
 
