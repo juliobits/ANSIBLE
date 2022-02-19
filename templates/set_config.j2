@@ -15,7 +15,7 @@ ip dhcp pool {{ config.name_pool }}
  dns-server 8.8.8.8
  domain-name ccna-lab.com
  lease 2
- router ospf {{ config.ospf_process}}
+ router ospf {{ config.ospf_process }}
 {%  for subnets  in config.network_ospf %}
  network {{ subnets }} 
 {%  endfor %}
