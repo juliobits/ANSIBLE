@@ -10,9 +10,9 @@ configs:
     excluded_pool: "192.168.1.1 192.168.1.5"
     name_pool: "R1-pool"
     network_pool: "192.168.1.0 255.255.255.0"
-    default_rtr: "192.168.1.1"    
+    default_rtr: "192.168.1.1"
+    ospf_process: "7"    
   - name: "OSPF configuracion"  
-    ospf_process: "7"
     network_ospf: 
       - "192.168.1.0 0.0.0.255 area 0"
       - "10.0.0.8 0.0.0.3 area 0"
