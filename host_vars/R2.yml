@@ -1,5 +1,4 @@
 ---  
-
 configs:
   - name: "variables de R2 para direccionamiento ip"
     if_lan: "0/0"
