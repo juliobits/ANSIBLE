@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 ansiblevault
+=======
+ansiblevault
+>>>>>>> 5d5a2fa3e9f7b47080118f2c2347a5376ea96b48
