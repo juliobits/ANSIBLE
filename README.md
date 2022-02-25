@@ -16,4 +16,4 @@ Happy learning!
 - How to create basics playbooks. 
 - How to create and execute playbooks on several network devices.
 
- # <a href='https//:steelcloud.com'><img src='https://www.steelcloud.com/wp-content/uploads/2020/11/GettingStartedWithAnsible-1200x780-1-1200x550.png' height='300' /></a>  
+ # <a href='https//:steelcloud.com'><img src='https://media-exp1.licdn.com/dms/image/C4E0BAQFr4Quu6A1H2w/company-logo_200_200/0/1625106634347?e=1654128000&v=beta&t=vsT4KOcPcH5ynLLPkw_8f1QSnvg-GWdDnZAn7DvGCBU.png' height='300' /></a>  
