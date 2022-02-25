@@ -1,4 +1,4 @@
-<img src='https://www.steelcloud.com/wp-content/uploads/2020/11/GettingStartedWithAnsible-1200x780-1-1200x550.png' />
+<img src='https://www.steelcloud.com/wp-content/uploads/2020/11/GettingStartedWithAnsible-1200x780-1-1200x550.png' height="60" />
 
 
 
