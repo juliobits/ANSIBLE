@@ -15,4 +15,4 @@ Happy learning!
 ## What will you learn about this Repository ?
 
 - How to create basics playbooks. 
-- How to create and execute basic playbooks on several network devices.
+- How to create and execute playbooks on several network devices.
