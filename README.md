@@ -1,5 +1,4 @@
 <img src='https://geekflare.com/wp-content/uploads/2019/06/ansible.jpg'  height='150' >
-
 # Welcome to the ANSIBLE wiki!
 
 This repository is about how to configure with ansible network devices as Router, Switches and Firewalls ( CISCO & JUNIPER ) most of all.
@@ -14,5 +13,5 @@ Happy learning!
 
 ## What will you learn about this Repository ?
 
-### ° How to create basics playbooks. 
-### ° how to create and execute basic playbooks on several network devices.
+- How to create basics playbooks. 
+- How to create and execute basic playbooks on several network devices.
