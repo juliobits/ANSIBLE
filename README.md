@@ -1,6 +1,6 @@
 <img src='https://geekflare.com/wp-content/uploads/2019/06/ansible.jpg' />
 
-# Welcome to the ANSIBLE wiki!
+# Welcome to the ANSIBLE repository!
 
 This repository is about how to configure with ansible network devices as Router, Switches and Firewalls ( CISCO & JUNIPER ) most of all
 
