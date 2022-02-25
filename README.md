@@ -1,4 +1,4 @@
-<img src='https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.steelcloud.com%2Fcomplete-your-playbook-with-ansible-integration%2F&psig=AOvVaw0r7V1CfJ13Ob2MhG3hd140&ust=1645845134932000&source=images&cd=vfe&ved=0CAgQjRxqFwoTCMijj4fxmfYCFQAAAAAdAAAAABAj.jpg' />
+<img src='https://www.steelcloud.com/wp-content/uploads/2020/11/GettingStartedWithAnsible-1200x780-1-1200x550.png' />
 
 
 
