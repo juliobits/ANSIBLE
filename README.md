@@ -1,6 +1,6 @@
-<img src='https://geekflare.com/wp-content/uploads/2019/06/ansible.jpg'  height='60' >  # Welcome to the ANSIBLE wiki!    
+<img src='https://geekflare.com/wp-content/uploads/2019/06/ansible.jpg'  height='100' >  
 
-
+# Welcome to the ANSIBLE wiki!    
 
 
 
