@@ -1,4 +1,4 @@
-<img src='https://geekflare.com/wp-content/uploads/2019/06/ansible.jpg' height='100' >
+<img src='https://geekflare.com/wp-content/uploads/2019/06/ansible.jpg' height='200' >
 
 # Welcome to the ANSIBLE repository!
 
