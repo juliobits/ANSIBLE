@@ -5,4 +5,4 @@ password: "{{ local_password }}"
 #ansible_python_interpreter: /usr/local/bin/python
 #user_data_path: "{{ '~/ansible' | expanduser }}"
 
-token_api_github: "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"
+

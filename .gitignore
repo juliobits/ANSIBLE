@@ -1,4 +1,5 @@
 #  List of ignored files uploaded to github
-*asa
-*juniper
-*cisco
+*asa*
+*juniper*
+*cisco*
+github_token
