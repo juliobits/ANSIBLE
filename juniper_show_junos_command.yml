@@ -1,0 +1,24 @@
+---
+
+  - name: "playbook 1: Get device version"
+    hosts: #
+    connection: local
+    gather_facts: no
+    
+    tasks:
+    
+    - name: "Task 1: run show version and check to see if output contains Juniper"
+      junos_command:
+        commands: "show version"
+        wait_for: result[0] contains JUNOS
+  
+        provider:
+          host: "{{ ansible_host }}"
+          username: "{{ NVS_username }}"
+          password: "{{ NVS_password }}"
+      register: version
+   
+    - name: "Task 2: display version output info to screen"              # This task will show the info collected from te previous task to the screen
+      debug:                                
+        msg: "{{ version }}"  
+

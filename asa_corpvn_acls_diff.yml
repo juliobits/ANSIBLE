@@ -1,0 +1,106 @@
+---
+
+- name: "playbook1: create repository, save outputs of ACL ASA "
+  hosts:
+    - localhost # executing this commands inside of the ansible server 
+  connection: local
+  gather_facts: no
+  vars_files:
+    - ../vault.yml
+  tasks:
+    - name: "task1: Generate by github repository with shell commands"
+      shell: |
+        git init
+        git config user.email "juliocesarqq@hotmail.com"
+        git config user.name "juliocqq"
+        git remote add origin https://{{ git_token }}@github.com/ExxonMobil/CONNECTIVITY-SYNACK-AUTOMATION.git
+        git pull origin master --force --rebase
+      run_once: true  
+      register: shell_output
+
+- name: "playbook2: Obtaining the Base Configuration"
+  hosts: #
+  connection: local
+  gather_facts: no
+  
+  tasks:
+    - name: "task1: Get Base ACL from ASA" 
+      asa_command:
+        commands:
+        - terminal pager 0
+        - show running-config access-list
+      register: asainfobase
+      ignore_errors: True
+
+    - local_action: 
+        module: copy 
+        content: "{{ asainfobase.stdout.1 }}"
+        dest: ./asainfobase.txt
+
+#    - debug: msg="{{lookup('file', './asainfobase.txt') }}" 
+
+- name: "task2:Compare ACLs"
+  hosts: 
+    - all,!houston
+  order: sorted
+  connection: local
+  gather_facts: no
+      
+  tasks:
+    - name: "task3: Getting ACLs from Devices"
+      asa_command:
+        commands:
+        - terminal pager 0
+        - show running-config access-list
+      register: asainfo
+      ignore_errors: True
+
+    - local_action: 
+        module: copy 
+        content: "{{ asainfo.stdout.1 }}"
+        dest: ./{{ inventory_hostname }}_asainfo.txt
+
+#    - debug: msg="{{lookup('file', './{{ inventory_hostname }}_asainfo.txt') }}" 
+
+    - name: "task4: Getting difference between files"
+      shell: diff -y -i --suppress-common-lines ./asainfobase.txt ./{{ inventory_hostname }}_asainfo.txt
+      register: diff_result
+      failed_when: diff_result.rc > 1  
+
+    - local_action: 
+        module: copy 
+        content: "{{ diff_result.stdout_lines }}"
+        dest: ./{{ inventory_hostname }}_diff_result.txt
+
+    - name: "task5: Show difference with base"
+      debug:
+        var: diff_result.stdout_lines
+
+    - name: "task6: Pushing to github"
+      shell: |
+        git add corpvpnacl.txt
+        git add asainfobase.txt
+        git add {{ inventory_hostname }}_asainfo.txt
+        git add {{ inventory_hostname }}_diff_result.txt
+        git commit -am "commit from tower corp_vpn_v02.yml"
+        git push origin master
+      delegate_to: localhost
+      run_once: true  
+      register: shell_output
+      
+    # - debug:
+    #     var: asainfobase.stdout_lines.1
+    
+#     - name: set fact for common vars for master
+#       set_fact:
+#         # regex to clean the show commands and create a variable to be compared with the rest of the hosts
+#         aclcompremark: "{{ asainfobase.stdout.1 | regex_findall ('access-list Split.*\\ remark.*') }}"
+#         aclcomppermit: "{{ asainfobase.stdout.1 | regex_findall ('access-list Split.*\\ permit.*.*\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}') }}"
+#       ignore_errors: True
+
+
+
+
+
+
+

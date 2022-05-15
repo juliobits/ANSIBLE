@@ -1,0 +1,82 @@
+---
+  
+    - name: "Playbook: implement configuration via conf file to Juniper"          
+      hosts: #                                                      
+      connection: local                          
+      gather_facts: no    
+      
+      roles:                                      
+        - Juniper.junos
+           
+      #collections:
+      #  - Juniper.device
+      tasks: 
+
+        - name: "Task 0: create configs directory"
+          file:
+            path: outputs
+            state: directory
+          run_once: yes
+  
+        - name: "Task 1: Apply configuration via ssh/cli, save the diff & configuration over files, execute a commit check, and them commit confirmed to analize the configuration"
+          juniper_junos_config:   
+            config_mode: 'private'
+            load: 'set'
+            format: text
+            check: true
+            confirmed: 10                    
+            retrieve: 'committed'
+            filter: "<routing-instances><instance><name>vrf-name</name></instance></routing-instances>"
+            diff: true
+            #src: "/home/coder/jcqquev/ansible/code-server-local/templates/{{ inventory_hostname }}.conf"
+            template: "/home/coder/jcqquev/ansible/code-server-local/templates/{{ inventory_hostname }}.j2"
+            vars:
+              host: "/home/coder/jcqquev/ansible/code-server-local/Inventories/Lab_inventory/lab_inventory/{{ inventory_hostname }}"
+            dest_dir: "/home/coder/jcqquev/ansible/code-server-local/outputs/configs" 
+            logdir: "/home/coder/jcqquev/ansible/code-server-local/outputs/logs"   
+            provider:                                                                                    
+              user: "{{ local_usernamee }}"                                 
+              passwd: "{{ local_password }}"
+              port: '830'              
+          register: bgp_config
+          notify: config_changed
+
+        - name: "Task 2: Print the complete response"
+          debug:
+            var: bgp_config
+      
+        - name: "Task 3: Display relevant changes" 
+          debug:
+            msg: "{{ bgp_config }}"
+             
+        - name: "Task 4: Wait to check the commited/diff configuration"
+          wait_for:
+            timeout: 5
+          
+        - name: "Task 5: List contents of config file"
+          command: cat outputs/configs/10.143.58.107.config
+          register: configs
+
+        - name: "Task 6: Print on screen this for empty file"
+          debug:
+            msg: "File is empty"
+          when: configs.stdout == ""
+
+        - name: "Task 6: Print on screen this for full file"
+          debug:
+            msg: "File is fully"
+          when: configs.stdout != ""
+       
+        - name: "Task 7: Executing commit to save new config"
+          juniper_junos_config:
+            commit: true
+
+                               
+      handlers:
+
+        - name: "HANDLER 1: Display relevant changes" 
+          listen: config_changed
+          debug:
+            msg: "{{ bgp_config }}"
+          
+        

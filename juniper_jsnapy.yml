@@ -1,0 +1,31 @@
+- name: "playbook: using JSNAPY for collecting BGP information"
+  hosts: Firewall_lab
+  connection: local
+  gather_facts: no
+  
+  #collections:
+  #  - juniper.device
+  
+  roles:                                                             
+    - Juniper.junos  
+    
+  tasks:
+
+    - name: "Task 1: using test file for JSNAPY collecting BGP info"
+      juniper_junos_jsnapy:
+        action: "snapcheck"
+        #test_files: "/home/coder/jcqquev/ansible/code-server-local/jsnapy files/tests/test_bgp_states.yml"
+        config_file: "jsnapy files/tests/test_bgp_states_config.yml"
+        dir: "jsnapy files/tests"
+        logdir: "/home/coder/jcqquev/ansible/code-server-local/jsnapy files/logs"
+        logfile: "jsnapy files/logs/info.log"
+      register: test1
+
+    - name: "Task 2: Verify all JSNAPy tests passed"
+      assert:
+        that:
+          - "test1.passPercentage == 100"
+        
+    - name: "Task 3: Print the full test response"
+      debug:
+        var: test1

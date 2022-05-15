@@ -1,7 +1,24 @@
-[LAB_GNS3]
+[cisco_GNS3]
 R1 ansible_host=192.168.56.1 
 R2 ansible_host=192.168.56.2 
 R3 ansible_host=192.168.56.3 
+
+[juniper_GNS3]
+
+
+[EC2_inventory]
+
+
+[all:vars]
+ansible_port=22
+
+[cisco_GNS3:vars]
+ansible_become=yes
+ansible_become_method=enable
+ansible_network_os=cisco.ios.ios
+
+[juniper_GNS3:vars]
+ansible_network_os=vyos.vyos.vyos
 
 
 

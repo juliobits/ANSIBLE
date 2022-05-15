@@ -1,0 +1,57 @@
+---
+  
+    - name: "Playbook: BGP RTIS colos information"          
+      hosts: arabb-wanrti001.sa.xom.com                                  # The root folder is Inventories > then folder Edge_Routers_inventory  # then inside of this is the following group                                            
+      connection:  local                                                 # connection type always local for rpc by Juniper
+      gather_facts: no    
+      
+      roles:                                                             # for this Playbook we use the Roles for Juniper Called - Juniper.junos
+        - Juniper.junos
+           
+      #collections:
+      #  - Juniper.device
+      tasks:                                                             # Here starts the tasks for the playbook
+    
+        - name: "Task 1: getting BGP info outputs using galaxy module"   #  First task is how to access to the juniper devices
+          juniper_junos_rpc:                                             #  We use the RPC to obtain the especific info that we need to substract
+            rpcs:                                                        # Then with the command  "" | display xml rpc we can obtain the name of the rpc
+              - get-bgp-neighbor-information                             # for this example iÂ´ve used show bgp neighbor- | display xml rpc
+            formats: xml                                                 # to access this info in format XML
+         #   kwargs:                                                     # you can use kwargs for filter especific info of this RPC
+         #     instance: VRF43                                           # for example to store just BGP info of the internet VRF
+            
+    
+            provider:                                                    # This is the logging settings for each device
+              host: "{{ ansible_host }}"                                 #  IÂ´ve created a group_vars called vars.yml where they are stored
+              user: "{{ NVS_username }}"                                 # Also iÂ´ve encrypted this sensitive info inside of the vault.yml
+              password: "{{ NVS_password }}"                             # This file is called vault, itÂ´s for save sensitive data as passwords usernames or whatever you need to encrypt
+          
+          register: bgp_info                                             # Then after you have the info from the rpc you need to save inside of a local variable
+                                                                         # for this example we use bgp_info
+        - name: "Task 2: display BGP output info to screen"              # This task will show the info collected from te previous task to the screen
+          debug:                                
+            msg: "{{ bgp_info }}"                                        # this is the message human readable 
+          
+        - name: "Task 3: Format XML for easy viewing"                    # Normally the output when you susbstract it will be disorganized 
+          xml:                                                           # This task is to give it a better shape and more human readable
+            xmlstring: "{{ bgp_info.stdout }}"                           
+            pretty_print: true        
+          register: pretty_config                                        # You need to save this new pretty output into a new local variable 
+          changed_when: false                                            # this was called pretty_config
+    
+        - name: "Task 4: Creating a folder to store BGP info outputs"    # This task is to create a folder 
+          file:
+            path: "outputs/shows"                                     # this is the name for the folder by default it will be stored on the root tree
+            state: directory                                             # To give it a state of this folder 
+          run_once: true                                                 # to just create 1 only folder so when you applied multiple times this playbook
+                                                                         # this wonÂ´t create another folder again
+        - name: "Task 5: Creating the files to store BGP info outputs"   # Final task to create the files from each device
+          copy:        
+            content: "{{ pretty_config.xmlstring }}"                     # you are merging the bgp_info local variable with pretty_config local variable
+            dest: "shows/{{ inventory_hostname }}-shows-rpc.xml"        # with that you are reshaping the content after you drop it to the files.
+                                                                         # finally you are locating the files to in which folder will be saved
+                                                                         # we will save it on the previous folder created on the task 4 outputs_bgp_info
+                                                                         # finally  with that ansible variable called inventory_hostname 
+                                                                         # this variable change its name for each device inside of the inventory.
+                                                                         # IÂ´ve used just Edge_Routers_Internet_RTI_Junos Group 
+                                                                         # So this playbook just will save the BGP info of each Juniper RTIs devices on The Colos.

@@ -2,3 +2,7 @@
 
 username: "{{ local_username }}"
 password: "{{ local_password }}"
+#ansible_python_interpreter: /usr/local/bin/python
+#user_data_path: "{{ '~/ansible' | expanduser }}"
+
+

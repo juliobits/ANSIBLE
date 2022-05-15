@@ -1,0 +1,8 @@
+
+{% for config in configs %}
+set routing-instances {{ config.vrf_name }} instance-type virtual-router
+set routing-instances {{ config.vrf_name }} protocols bgp group {{ config.group_bgp }} type external
+set routing-instances {{ config.vrf_name }} protocols bgp group {{ config.group_bgp }} metric-out igp
+set routing-instances {{ config.vrf_name }} protocols bgp group {{ config.group_bgp }} peer-as {{ config.peer_as }}
+set routing-instances {{ config.vrf_name }} protocols bgp group {{ config.group_bgp }} neighbor {{ config.neighbor_bgp }} 
+{% endfor %}      

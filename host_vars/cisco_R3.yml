@@ -1,0 +1,18 @@
+---  
+configs:
+  - name: "variables de R3 para direccionamiento ip"
+    if_lan: "0/0"
+    address_lan: "192.168.3.1 255.255.255.0"
+    if_wan1: "2/0"
+    address_wan1: "10.0.0.2 255.255.255.252"
+    if_wan2: "2/3"
+    address_wan2: "10.0.0.6 255.255.255.252"
+    excluded_pool: "192.168.3.1 192.168.3.5"
+    name_pool: "R3-pool"
+    network_pool: "192.168.3.0 255.255.255.0"
+    default_rtr: "192.168.3.1"
+    ospf_process: "7"  
+    network_ospf: 
+      - "192.168.3.0 0.0.0.255 area 0"
+      - "10.0.0.0 0.0.0.3 area 0"
+      - "10.0.0.4 0.0.0.3 area 0"

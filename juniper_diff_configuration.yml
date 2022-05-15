@@ -1,0 +1,31 @@
+---
+  
+    - name: "Playbook: Analize old config vs new config device"          
+      hosts: #                                                    
+      connection: local                                                 
+      gather_facts: no    
+      
+      roles:                                                             
+        - Juniper.junos
+          
+      tasks:      
+
+       - name: "Task 1: Get output config from New device"  
+         juniper_junos_command:                                            
+           commands:                                                      
+             - "show configuration | display set"
+           provider:                                                    
+             host: "{{ ansible_host }}"                                 
+             user: "{{ username_var}}"                              
+             password: "{{ password_var }}"           
+           dest: "{{ file_1 }}"
+
+       - name: "Task 2: Generate diff between New vs Old device"
+         command: diff "{{ file_1 }}" "{{ file_2 }}"
+         register: diff_result
+         ignore_errors: true 
+
+       - name: "Task 3: save diff output"
+         copy:
+           content: "{{diff_result.stdout}}"
+           dest: "{{ diff_file }}"

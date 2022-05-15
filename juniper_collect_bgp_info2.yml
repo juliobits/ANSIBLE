@@ -1,0 +1,76 @@
+---
+- name: collect bgp peering information 
+  connection: local
+  gather_facts: no
+  
+  hosts: #
+  
+  tasks:
+    - name: run show version on remote devices
+      junos_command:
+        commands: show bgp neighbor 
+      register: bgp_neighbor
+    
+    # Clean up the results of the show commands previously performed
+    - name: set fact for common vars
+      set_fact:
+        Peer_Address: "{{ bgp_neighbor.stdout.0 | regex_findall('Peer:\\s+(\\S+) AS\\s+(\\S+)')}}"
+        Local_Address: "{{ bgp_neighbor.stdout.0 | regex_findall('Local:\\s+(\\S+)')}}"
+        Type: "{{ bgp_neighbor.stdout.0 | regex_findall('Type:\\s+(\\S+)')}}"
+        State: "{{ bgp_neighbor.stdout.0 | regex_findall(' State:\\s+(\\S+)    ')}}"
+        Peer_Group: "{{ bgp_neighbor.stdout.0 | regex_findall('Group:\\s+(\\S+)')}}"
+        Export_Policy: "{{ bgp_neighbor.stdout.0 | regex_findall('Export: .\\s+(\\S+)\\s')}}"
+      ignore_errors: True
+    
+    #- debug: msg="./{{ item.0 }}/{{ item.1 }}/{{ item.2 }}/{{ item.3 }}"
+    #  with_nested:
+    #    - "{{ State }}"
+    #    - "{{ Peer_Group }}"
+    #    - "{{ Export_Policy }}"
+    #    - "{{ Type }}"
+    
+    - name: Send the master config data to splunk index
+      shell: |
+        curl -H "Authorization: Splunk {{lookup('env', 'OVIRT_PASSWORD')}}" https://hoesplshrpiniv1.na.xom.com:8088/services/collector/event -d '{"sourcetype": "BGP", "index":"corp_vpn_inventory", "event": { "VPN_Host_Name":"{{inventory_hostname_short|upper}}", "Peer_Address":"{{ item[0] }}","Local_Address":"{{ item[1] }}","Local_AS":"{{ item[2] }}","Type":"{{ item[3] }}","State":"{{ item[4] }}","Peer_Group":"{{ item[5] }}","Export_Policy":"{{ item[6] }}"}}'
+      with_nested:
+        - "{{ Peer_Address }}"
+        - "{{ Local_Address }}"
+        - "{{ Type }}"
+        - "{{ State }}"
+        - "{{ Peer_Group }}"
+        - "{{ Export_Policy }}"
+      register: shell_output_1
+     # run_once: true
+      ignore_errors: true
+      
+    #- name: get system information
+    #  junos_rpc:
+    #    rpc: get-bgp-neighbor-information
+    #  register: get_bgp_neighbor_information
+    
+    #- name: save parsed output to variable
+    #  set_fact:
+    #    bgp_neighbor: "{{get_bgp_neighbor_information |  to_nice_json}}"
+    #    peer_info: "{{ bgp_neighbor.parsed_output['bgp-information'][0]['bgp-peer']}}"
+
+    #- name: parsed bgp peer info
+    #  set_fact:
+    #    bgp_neighbor_list: "{{ bgp_neighbor_list | default([]) + [dict(Peer_Address=item['peer-address'][0]['data'],Peer_AS=item['peer-as'][0]['data'],Local_Address=item['local-address'][0]['data'],Type=item['peer-type'][0]['data'],State=item['peer-state'][0]['data'],PeerGroup=item['peer-group'][0]['data'],BGP_RIB=item['bgp-rib'][0]['name'][0]['data'] | default([]),Export_Policy=item['bgp-option-information'][0]['export-policy'][0]['data'] | default([]),Import_Policy=item['bgp-option-information'][0]['import-policy'][0]['data'] | default([]))] }}"
+    #  loop: "{{ peer_info | list }}"
+    #  loop_control:
+    #    label: "{{ item['peer-address'] }}"
+  
+   # - name: Print response 
+   #   debug: 
+   #     msg:
+         #- "Version: {{version}}"
+         #- "BGP: {{ bgp_neighbor }}"
+   #      - "Peer_Address: {{Peer_Address }}"
+   #      - "Local_Address: {{ Local_Address }}"
+   #      - "Type: {{ Type }}"
+   #      - "State: {{ State }}"
+   #      - "Peer_Group: {{ Peer_Group }}"
+   #      - "Export_Policy: {{ Export_Policy }}"
+   #      - "Peers Data: {{ peers_data }}"
+      #loop: "{{ bgp_neighbor }}"
+   #   ignore_errors: True

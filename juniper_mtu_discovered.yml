@@ -1,0 +1,31 @@
+---
+
+  - name: "playbook 1: Get MTU of a entire path"
+    hosts: 
+      #
+    connection: local
+    gather_facts: no
+    
+    roles:
+      - Juniper.junos
+
+    tasks:
+
+      - name: "Perform PMTUD to Register response"
+        juniper_junos_pmtud:
+          dest: 8.8.8.8
+        register: response
+        
+        provider:                                                    
+            host: "{{ ansible_host }}"                                 
+            user: "{{ NVS_username }}"                                
+            password: "{{ NVS_password }}"
+
+      - name: "Print the discovered MTU."
+        debug:
+          var: response.inet_mtu
+
+      - name: Check response
+        assert:
+            that:
+              - 768 <= response.inet_mtu <= 1500

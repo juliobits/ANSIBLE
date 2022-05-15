@@ -1,0 +1,26 @@
+---
+
+- name: Get device uptime
+  hosts: #
+  connection: local
+  gather_facts: no
+   
+  tasks:
+  
+  - name: "Task 1: run show version and check to see if output contains IOS"
+    ios_command:
+      commands: "show version"
+      wait_for: result[0] contains IOS
+
+      provider:
+        host: "{{ ansible_host }}"
+        username: "{{ NVS_username }}"
+        password: "{{ NVS_password }}"
+        timeout: 30
+        
+    register: version
+ 
+  - name: "Task 2: display version output" 
+    debug:
+      msg: "{{ version }}"
+    

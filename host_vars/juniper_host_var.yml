@@ -1,0 +1,9 @@
+---
+
+configs: 
+  
+  - name: "demo bgp configuration" 
+    vrf_name: "demoVRF" 
+    group_bgp: "demogroup"
+    peer_as: "65530"
+    neighbor_bgp: "10.0.0.1"

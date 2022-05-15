@@ -1,0 +1,121 @@
+---
+- name: Corp VPN devices data
+  hosts: #
+  connection: local
+  gather_facts: no
+  
+  tasks:
+    - name: show common commands
+      asa_command:
+        commands:
+        - sh cpu
+        - sh mem | i Used
+        - sh interface {{asaint | default('outside')}} | i 5 minute
+        - sh ver | i Software Version|Hardware:|Serial Number| up |Device Manager
+        - sh vpn-sess | i SSL/TLS/DTLS|Browser
+        - sh running-config | include dns-server
+        - sh running-config aaa-server | include aaa-server
+        - sh running-config group-policy | include group-policy
+        - sh running-config | include anyconnect profiles value
+        - sh running-config ip address management | i ip
+        - sh running-config ip address outside | i ip address
+        - sh running-config ip local pool
+        - sh running-config name
+ 
+      register: asainfo
+      ignore_errors: True
+      
+   #Info: This task prints the command output
+   # - name: Print response
+   #   debug: 
+   #     msg:
+   #      - "{{result}}"
+         
+    - name: set fact for common vars
+      set_fact:
+       cpu: "{{ asainfo.stdout.0 | regex_findall('(\\d+)%') | last }}"
+       mem: "{{ asainfo.stdout.1 | regex_findall('(\\d+)%') | first }}"
+       inbytes: "{{ asainfo.stdout.2 | regex_findall('(\\d+)\\s+bytes/sec') | first }}"
+       outbytes: "{{ asainfo.stdout.2 | regex_findall('(\\d+)\\s+bytes/sec') | last }}"
+       drop: "{{ asainfo.stdout.2 | regex_findall('(\\d+)\\s+pkts/sec') | last }}"
+       asav: "{{ asainfo.stdout.3 | regex_findall('Software Version\\s+(\\S+)') | first }}"
+       #asdmv: "{{ asainfo.stdout.3 | regex_findall('Device Manager Version\\s+(\\S+)') | first }}"
+       asdmv: 7.12(2)14
+       uptime: "{{ asainfo.stdout.3 | regex_replace('cluster up','') | regex_search('up (.*) days|up (.*) hours') | regex_replace('up ','') }}"
+       model: "{{ asainfo.stdout.3 | regex_findall('Hardware:\\s+(\\S+),') | first }}"
+       hardware: "{{ asainfo.stdout.3 | regex_findall('Hardware:.*') | last }}"
+       ram: "{{ asainfo.stdout.3 | regex_findall('(\\d+)\\s+MB RAM,') | first }}"
+       core: "{{ asainfo.stdout.3 | regex_findall('CPU.*') | last }}"
+       serial: "{{ asainfo.stdout.3 | regex_findall('Serial Number:\\s+(\\S+)') | first }}"
+       date: "{{ lookup('pipe','date +%Y-%m-%d') }} {{ lookup('pipe','date +%H:%M:%S') }}"
+       mmmyy: "{{ lookup('pipe','date +%b') }}"
+       dns: "{{ asainfo.stdout.5 | regex_findall('\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}') | unique}}"
+       aaaserver: "{{ asainfo.stdout.6 | regex_findall('(\\S*[-].\\S*[-].\\w+)') | unique}}"
+       grouppolicy: "{{ asainfo.stdout.7 | regex_findall('(\\S*[-].\\S*[-].\\w+)') | unique}}"
+       anyprofile: "{{ asainfo.stdout.8 | regex_findall('(\\S*[-].\\w+)') | unique}}"
+       mgmip: "{{ asainfo.stdout.9 | regex_findall('\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}') | first}}"
+       outsidename: "{{ asainfo.stdout.10 | regex_findall('\\w{1,}\\.\\w{1,}.\\w{1,}') | first}}"
+       pools: "{{ asainfo.stdout.11 | regex_findall('\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}[-]\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}')}}"
+       clustername: "{{ asainfo.stdout.12 | regex_findall('([A-Z-a-z](\\w{1,}\\.\\w{1,}.\\w{1,}))') | first | first}}"
+       clusterip: "{{ asainfo.stdout.12 | regex_findall('\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}') | first}}"
+       
+    - name: set fact for AnyConnect sessions
+      set_fact:
+        ACsess: "{{ asainfo.stdout.4 | regex_search('DTLS (.+)') | regex_findall('(\\d+)') }}"
+      when: asainfo.stdout.4.find("DTLS") != -1
+     
+    - name: show extra variables for FPR4K-SM-12 model
+      asa_command:
+        commands:
+        - sh license all | i AnyConnect P
+      register: anyconnect
+      ignore_errors: True
+      when: model == "FPR4K-SM-12"  
+      
+    - name: show extra variables for ASA5555 model
+      asa_command:
+        commands:
+        - show activation-key detail | grep Premium
+      register: anyconnect1
+      ignore_errors: True
+      when: model == "ASA5555"   
+    
+    - name: set fact for extra vars for model FPR4K-SM-12
+      set_fact:
+       peers: "{{ anyconnect.stdout.0 | regex_findall('\\d+') | first}}"
+       throughtput: "6000mbps"
+      when: model == "FPR4K-SM-12"
+      
+    - name: set fact for extra vars for model ASA5555
+      set_fact:
+       peers: "{{ anyconnect1.stdout.0 | regex_findall('\\d+') | first}}"
+       throughtput: "700Mbps"
+      when: model == "ASA5555"
+      
+    - name: set fact for calculations
+      set_fact:
+        total: "{{ram|int + peers|int}}"
+        pool1: "{{asainfo.stdout.11 | regex_findall('\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}')}}"
+        
+    - name: Print response 
+      debug: 
+        msg:
+         - "Name: {{inventory_hostname_short|upper}}"
+         - "Mgm ip: {{mgmip}}"
+         - "External DNS Name: {{outsidename}}"
+         - "Cluster Name: {{clustername}}"
+         - "Cluster Ip: {{clusterip}}"
+         - "Pool allocation: {{pools}}"
+         - "Uptime: {{uptime}}"
+         - "Model: {{model}}"
+         - "RAM: {{ram}}"
+         - "Cores: {{core}}"
+         - "Serial: {{serial}}"
+         - "AnyConnect: {{peers}}"
+         - "Group Policy: {{grouppolicy}}"
+         - "Any Connect profile: {{anyprofile}}"
+         - "DNS Servers: {{dns}}"
+         - "AAA-Servers: {{aaaserver}}"
+         - "Throughtput: {{throughtput}}"
+         - "Total: {{total}}"
+         - "pool individual: {{pool1}}"

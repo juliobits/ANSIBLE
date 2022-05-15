@@ -1,0 +1,56 @@
+---
+  
+    - name: "Playbook: BGP Routers information"          
+      hosts: #                                                        
+      connection: local                                                 
+      gather_facts: no    
+      
+      roles:                                                             
+        - Juniper.junos
+           
+      #collections:
+      #  - Juniper.device
+      tasks:      
+
+      - name: "Task 1: Creating a folder to store BGP info outputs"    
+        file:
+          path: "outputs/shows"                                     
+          state: directory                                             
+        run_once: true   
+
+      - name: "Task 2: Getting BGP info outputs using juniper junos commands ansible modules"  
+        juniper_junos_command:                                            
+          commands:                                                      
+            - "show configuration routing-instances VRF43 protocols bgp | display set"  
+            - "show configuration routing-instances vrf43 protocols bgp | display set"             
+            - "show configuration routing-instances INTERNET-VR protocols bgp | display set"
+            - "show configuration policy-options policy-statement EBGP-SECNEC470-NORTH-EXPORT | display set"    
+            - "show configuration policy-options policy-statement VRF43-EXPORT | display set"             
+            - "show configuration policy-options policy-statement NHS | display set"
+            - "show configuration policy-options prefix-list SWG-ROUTES | display set"
+            - "show configuration policy-options prefix-list ZOOM-ROUTES | display set"
+            - "show configuration policy-options route-filter-list SWG-ROUTES | display set"
+            - "show configuration policy-options route-filter-list ZOOM-ROUTES | display set"
+            - "show configuration protocols static | display set" 
+
+          provider:                                                    
+            host: "{{ ansible_host }}"                                 
+            user: "{{ SRX_username }}"                                
+            password: "{{ SRX_password }}" 
+          
+          dest: "/home/coder/jcqquev/ansible/code-server-local/outputs/shows/{{ inventory_hostname }}-show.txt"   
+        
+        register: bgp_config_info
+
+     
+      - name: "Task 3: Display BGP output info to screen"             
+        debug:                                
+          msg: "{{ bgp_config_info }}" 
+
+     # - name: "Task 4: Send email after implementation"
+     #   mail:
+     #     host: smtp.na.xom.com
+     #     port: 553
+     #     to: Quintero Quevedo, Julio Cesar <julio.c.quevedo@exxonmobil.com>
+     #     subject: Ansible-ZOOM-SWG configs
+     #     body: testing

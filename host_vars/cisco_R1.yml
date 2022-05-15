@@ -1,0 +1,18 @@
+---  
+configs:
+  - name: "variables de R2 para direccionamiento ip"
+    if_lan: "0/0"
+    address_lan: "192.168.1.1 255.255.255.0"
+    if_wan1: "2/1"
+    address_wan1: "10.0.0.9 255.255.255.252"
+    if_wan2: "2/0"
+    address_wan2: "10.0.0.1 255.255.255.252"
+    excluded_pool: "192.168.1.1 192.168.1.5"
+    name_pool: "R1-pool"
+    network_pool: "192.168.1.0 255.255.255.0"
+    default_rtr: "192.168.1.1"
+    ospf_process: "7"    
+    network_ospf: 
+      - "192.168.1.0 0.0.0.255 area 0"
+      - "10.0.0.8 0.0.0.3 area 0"
+      - "10.0.0.0 0.0.0.3 area 0"

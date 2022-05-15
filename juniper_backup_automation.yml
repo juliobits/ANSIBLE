@@ -1,0 +1,85 @@
+---
+- name: Create timestamp for filenames
+  hosts: #
+  connection: local
+  gather_facts: yes
+
+  vars:
+    systime: "{{ ansible_date_time.time | replace(':', '-') }}"
+
+  tasks:
+#    - debug:
+#        var: ansible_date_time.time
+#    - debug:
+#        var: systime
+    - name: save timestamp in a variable for later use
+      set_fact:
+        timestamp: "{{ ansible_date_time.date }}_{{ systime }}"
+
+- name: backup config
+  hosts: #
+  collections:
+    - juniper.device
+  connection: local
+  gather_facts: no
+
+  vars:
+    config_dir: "files/{{ inventory_hostname }}"
+#    config_filename: "{{ config_dir }}/{{ inventory_hostname }}.conf"
+#    config_dir: "{{ user_data_path }}/pserojo/config_backups/{{ inventory_hostname }}"
+    config_filename: "{{ config_dir }}/{{ inventory_hostname }}_{{ hostvars.localhost.timestamp }}.conf"
+
+  tasks:
+    - name: confirm/create device configuration directory
+      file:
+        path: "{{ config_dir }}"
+        state: directory
+#      run_once: yes
+#      delegate_to: localhost # task is executed in the local host (not the network device). redundant because of connection: local
+
+    - name: get list of previous backups (if any)
+      find:                                              # Ansible module. Return a list of files based on specific criteria. Multiple criteria are ANDâ€™d together. one of the atributes for each file is the "path".
+        file_type: file                                  # search files, not directories or links.
+        path: "{{ config_dir }}"                         # path where searching.
+        patterns: "{{ inventory_hostname }}*.conf"       # matching pattern
+      register: old_configs_details                      # saves output in variable.
+
+    - name: shows list of previous configs
+      debug:
+        var: old_configs_details
+
+    - name: save name of most recent previous backup
+      set_fact:
+        prev_config: "{{ old_configs_details.files | sort(attribute='path') | map(attribute='path') | list | last }}" # old_configs_details.files is a list of dictionaries with information about each file. First filter "sort(attribute='path')" uses the "path" attribute (which includes file name) to sort the list of files. Next filter map(attribute='path'), extracts just the path attribute from the dictionaries and creates a new list containing those paths. next filter, "list", reformats it as astandard list. "last" filter removes and returns the last entry in the list. the path of the last backup is assigned to the variable. 
+      when: old_configs_details.matched > 0 # if there is not at least one backup file, the task is skipped
+
+    - name: show list of previous configs
+      debug:
+        var: prev_config
+
+    - name: save device configuration
+      juniper.device.config:
+        provider: "{{ connection_settings }}"
+        dest: "{{ config_filename }}"
+        format: text
+        retrieve: committed                   # retrieves the active config (not candidate).
+
+    - name: display path to latest backup file
+      debug:
+        msg: "The configuration backup is in {{ config_filename }}"
+
+    - name: get difference between backups
+      shell: diff -I '^## Last [change|commit]' {{ prev_config }} {{ config_filename }} #"shell" calls a linux command, in this case "diff". "-I '^## Last [change|commit]'"", tells diff to ignore the header line that Junos adds to the top of a configuration that includes the date and time the configuration was committed
+      when: prev_config is defined
+      register: diff_result
+      failed_when: diff_result.rc > 1             # alters the default behavior of what the module regards as failure. by default for shell a non-zero result is failure. diff command returns a code of 2 when error occurred. NOTE: may be different btween diff versions.
+
+    - name: show difference with last backup
+      debug:
+        var: diff_result
+
+    - name: delete new backup if same as previous
+      file:
+        path: "{{ config_filename }}"
+        state: absent
+      when: (diff_result.changed) and (diff_result.rc == 0)

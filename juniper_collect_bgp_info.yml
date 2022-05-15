@@ -1,0 +1,112 @@
+---
+
+- name: collect bgp peering information 
+  connection: local
+  gather_facts: no
+  
+  hosts: Edge_Routers_Internet_RTI_Junos
+
+  collections:
+    - juniper.device
+
+  vars:
+    file_name: "./files/{{ inventory_hostname }}-bgp-neigbors.info"
+    file_header: "BGP Peer Information For Host:"
+    bgp_neighbor_list: []
+    bgp_summary_list: []
+  
+  tasks:
+
+    - name: get bgp neighbor information
+      juniper.device.rpc:
+        rpcs:
+          - get-bgp-neighbor-information
+        format: json
+        # dest: "./files/{{ inventory_hostname }}-bgp-neigbors-raw.json"
+      register: get_bgp_neighbor_information
+    
+    - name: save parsed output to variable
+      set_fact:
+        peer_info: "{{ get_bgp_neighbor_information.parsed_output['bgp-information'][0]['bgp-peer']}}"
+
+    - name: parsed bgp peer info
+      set_fact:
+        bgp_neighbor_list: "{{ bgp_neighbor_list | default([]) + [dict(Peer_Address=item['peer-address'][0]['data'],Peer_AS=item['peer-as'][0]['data'],Local_Address=item['local-address'][0]['data'],Type=item['peer-type'][0]['data'],State=item['peer-state'][0]['data'],PeerGroup=item['peer-group'][0]['data'],BGP_RIB=item['bgp-rib'][0]['name'][0]['data'] | default([]),Export_Policy=item['bgp-option-information'][0]['export-policy'][0]['data'] | default([]),Import_Policy=item['bgp-option-information'][0]['import-policy'][0]['data'] | default([]))] }}"
+      loop: "{{ peer_info | list }}"
+      loop_control:
+        label: "{{ item['peer-address'] }}"
+
+    - name: get bgp summary information
+      juniper.device.rpc:
+        rpcs:
+          - get-bgp-summary-information
+        format: json
+        # dest: "./files/{{ inventory_hostname }}-bgp-summary-raw.json"
+      register: get_bgp_summary_information
+
+    - name: save peer summary to variable
+      set_fact:
+        peer_summary_info: "{{ get_bgp_summary_information.parsed_output['bgp-information'][0]['bgp-peer'] }}"
+
+    - name: parsed bgp summary info
+      set_fact:
+        bgp_summary_list: "{{ bgp_summary_list | default([]) + [dict(Elapsed_Time=item['elapsed-time'][0]['data'])] }}"
+      loop: "{{ peer_summary_info | list }}"
+      loop_control:
+        label: "{{ item['elapsed-time'] }}"
+
+    - name: zip bgp neighbor and summary
+      set_fact:
+        bgp_zipped_list: "{{ bgp_zipped_list | default([]) + [dict(PEERING_INFORMATION=item[0],ELAPSED_TIME=item[1])] }}"
+      loop: "{{ bgp_neighbor_list | zip(bgp_summary_list) | list }}"
+      loop_control:
+        label: "{{ item[0] }}"
+    
+    - name: Send BGP Data to splunk index
+      shell: | 
+        curl -H "Authorization: Splunk {{lookup('env', 'OVIRT_PASSWORD')}}" https://hoesplshrpiniv1.na.xom.com:8088/services/collector/event -d '{"sourcetype": "BGP", "index":"corp_vpn_inventory", "event": { "VPN_Host_Name":"{{inventory_hostname_short|upper}}", "BGP": "{{item}}"}}'
+      loop: "{{ bgp_neighbor_list }}"
+      register: shell_output
+      ignore_errors: true
+          
+
+    # - name: show policy
+    #   juniper.device.command:
+    #     command:
+    #       - "show policy {{ item['PEERING_INFORMATION']['Export_Policy'] | default([]) }}"
+    #     format: text
+    #     # dest: "./files/{{ inventory_hostname }}-show-policy-raw.json"  
+    #   loop: "{{ bgp_zipped_list | list }}"
+    #   when: item['PEERING_INFORMATION']['Export_Policy'] != []
+    #   register: show_policy_raw      
+      # loop_control:
+      #   label: "{{ item[0] }}"
+
+    # - name: show policy results
+    #   set_fact:
+    #     show_policy_results: "{{ show_policy_raw['results'] }}"
+  
+    # - name: parsed policy parsed
+    #   set_fact:
+    #     show_policy_parsed: "{{ show_policy_parsed | default([]) + [dict(show_policy=item['parsed_output']['output'][0]['data'])] }}"
+    #   loop: "{{ show_policy_results | list }}"   
+    
+    # - name: save parsed output to variable
+    #   set_fact:
+    #     show_policy_parsed: "{{ show_policy_raw[]}}"
+  
+    # - name: zip with export
+    #   set_fact:
+    #     bgp_export_zipped_list: "{{ bgp_export_zipped_list | default([]) + [dict(PEERING_INFORMATION=item[0],POLICY_INFORMATION=item[1])] }}"
+    #   loop: "{{ bgp_zipped_list | zip(show_policy) | list }}"
+      # loop_control:
+      #   label: "{{ item[0] }}"
+
+    #- debug:
+    #    var: bgp_neighbor_list
+    
+    - name: Print response 
+      debug: 
+        msg:
+         - "BGP: {{bgp_neighbor_list}}"
+      ignore_errors: True

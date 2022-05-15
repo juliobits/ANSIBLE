@@ -1,0 +1,25 @@
+---
+
+- name: Ansible Cloudformation module example using a template parameter 
+  hosts: localhost                                                                              # Defining the remote server where the Cloudformation module will run
+  remote_user: ubuntu                                                                           # Defining the remote user (ubuntu) where the Cloudformation module will run 
+  tasks:
+    - name: create a cloudformation stack                                                       # Ansible removes the CloudFormation from the AWS Cloud if you set the state value as absent. 
+      amazon.aws.cloudformation:                                                                # Ansible creates the CloudFormation in the AWS Cloud if you set the state value as present.
+        stack_name: "ansible-cloudformation-shanky"                                             # create a cloudformation stack Using template parameter                                                                                                                 
+        state: "present"                                                                        # If you need to create a cloudformation stack Using Jinja template
+        region: "us-east-2"                                                                     # uncomment the template_body parameter using lookup of Jinja2 template and comment template parameter     
+        template: "C:/Users/julio/OneDrive/Escritorio/ansible/cloudformation-EC2-template.json" # template_body: "{{ lookup('template', 'cloudformation.j2') }}"
+        tags:                                                                                   # Declaring the tags to the CLoudformation stack
+          Stack: "ansible-cloudformation"                 
+                                                          
+                                                          
+                                                         
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 

@@ -1,0 +1,143 @@
+---
+  
+    - name: "Playbook1: implement configuration via conf file to Juniper"          
+      hosts: #                                             
+      connection: local                         
+      gather_facts: no    
+      
+      roles:                                      
+        - Juniper.junos
+           
+      #collections:
+      #  - Juniper.device
+      tasks: 
+
+        - name: "Task 1: create configs directory"
+          file:
+            path: outputs
+            state: directory
+          run_once: yes
+  
+        - name: "Task 2: Apply configuration via ssh/cli part 1"
+          juniper_junos_config:   
+            config_mode: 'private'
+            load: 'set'
+            format: text
+            check: true
+            confirmed: 10                   
+            retrieve: 'committed'
+            diff: true
+            src: "/home/coder/jcqquev/ansible/code-server-local/templates/part1.conf"
+            dest_dir: "/home/coder/jcqquev/ansible/code-server-local/outputs/configs" 
+            logdir: "/home/coder/jcqquev/ansible/code-server-local/outputs/logs" 
+            filter: "<routing-instances><instance><name>table-name</name></instance></routing-instances>"
+            provider:                                                                                    
+              user: "{{ NVS_username }}"                                  
+              passwd: "{{ NVS_password }}"          
+              port: '830'              
+          register: bgp_config1
+          notify: config_changed
+               
+        - name: "Task 3: Wait to check configuration part 1"
+          wait_for:
+            timeout: 540 # 9 minutes
+                 
+        - name: "Task 4: Executing commit to save part 1"
+          juniper_junos_config:
+            commit: true
+          
+        - name: "Task 5: checking propagation of routes table-name via BGP" 
+          juniper_junos_command:
+            commands:
+              - "show route protocol isis table table-name.inet.0"  # should be 0 routes 
+              - "show route receive-protocol bgp x.x.x.x table table-name-1 # should be added the routes of ISIS 
+              - "show route receive-protocol bgp x.x.x.x table table-name-2 "                             
+            dest_dir: "/home/coder/jcqquev/ansible/code-server-local/outputs/shows"
+
+        - name: "Task 6: Wait to check the routes on file "
+          wait_for:
+            timeout: 540 # 9 minutes
+
+        - name: "Task 7: Apply configuration via ssh/cli part 2"
+          juniper_junos_config:   
+            config_mode: 'private'
+            load: 'set'
+            format: text
+            check: true
+            confirmed: 10                    
+            retrieve: 'committed'
+            diff: true
+            src: "/home/coder/jcqquev/ansible/code-server-local/templates/part2.conf"
+            dest_dir: "/home/coder/jcqquev/ansible/code-server-local/outputs/configs" 
+            logdir: "/home/coder/jcqquev/ansible/code-server-local/outputs/logs"  
+            filter: "<routing-instances><instance><name>table-name</name></instance></routing-instances>" 
+            provider:                                                                                    
+              user: "{{ NVS_username }}"                                  
+              passwd: "{{ NVS_password }}"           
+              port: '830'              
+          register: bgp_config2
+          notify: config_changed
+                       
+        - name: "Task 8: Wait to check configuration part 2"
+          wait_for:
+            timeout: 540 # 9 minutes
+          
+       
+        - name: "Task 9: Executing commit to save new config part 2"
+          juniper_junos_config:
+            commit: true
+       
+
+        - name: "Task 10: Wait to bgp establishment"
+          wait_for:
+            timeout: 300 # 5 minutes 
+
+        - name: "Task 11: checking propagation of routes in BGP and the neighbor establishment" 
+          juniper_junos_command:
+            commands:
+              - "show bgp neighbor x.x.x.x"
+              - "show route receive-protocol bgp x.x.x.x table table-name"
+              - "show route receive-protocol bgp x.x.x.x table table-name"        
+            dest_dir: "/home/coder/jcqquev/ansible/code-server-local/outputs/shows"
+        
+        - name: "Task 12: Wait to check the propagation of routes with the new neighbor"
+          wait_for:
+            timeout: 540 # 9 minutes
+            
+        - name: "Task 13: Apply configuration via ssh/cli part 3"
+          juniper_junos_config:   
+            config_mode: 'private'
+            load: 'set'
+            format: text
+            check: true
+            confirmed: 10                    
+            retrieve: 'committed'
+            diff: true
+            src: "/home/coder/jcqquev/ansible/code-server-local/templates/part3.conf"
+            dest_dir: "/home/coder/jcqquev/ansible/code-server-local/outputs/configs" 
+            logdir: "/home/coder/jcqquev/ansible/code-server-local/outputs/logs" 
+            filter: "<routing-instances><instance><name>table-name</name></instance></routing-instances>"  
+            provider:                                                                                    
+              user: "{{ NVS_username }}"                                 
+              passwd: "{{ NVS_password }}"           
+              port: '830'              
+          register: bgp_config3
+          notify: config_changed
+               
+        - name: "Task 14: Wait to check configuration part 3"
+          wait_for:
+            timeout: 540 # 9 minutes
+                 
+        - name: "Task 15: Executing commit to save new config part 3"
+          juniper_junos_config:
+            commit: true
+          
+        - name: "Task 16: checking the isis configuration" 
+          juniper_junos_command:
+            commands:
+              - "show configuration routing-instances table-name protocols isis" # the interface ae3.0 shoudlnÂ´t exist anymore  
+            dest_dir: "/home/coder/jcqquev/ansible/code-server-local/outputs/shows"
+
+        - name: "Task 17: Wait to check the isis config file"
+          wait_for:
+            timeout: 300 # 5 minutes
