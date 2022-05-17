@@ -12,8 +12,8 @@
       shell: |
         git init
         git config user.email "juliocesarqq@hotmail.com"
-        git config user.name "juliocqq"
-        git remote add origin https://{{ git_token }}@github.com/ExxonMobil/CONNECTIVITY-SYNACK-AUTOMATION.git
+        git config user.name "juliobits"
+        git remote add origin https://{{ tkn }}@github.com/juliobits/ANSIBLE.git
         git pull origin master --force --rebase
       run_once: true  
       register: shell_output
