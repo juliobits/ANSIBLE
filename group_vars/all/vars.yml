@@ -4,5 +4,6 @@ username: "{{ local_username }}"
 password: "{{ local_password }}"
 #ansible_python_interpreter: /usr/local/bin/python
 #user_data_path: "{{ '~/ansible' | expanduser }}"
-tkn: "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"
 
+token_api_github: "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"
+tkn: "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"
