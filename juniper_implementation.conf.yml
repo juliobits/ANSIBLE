@@ -32,8 +32,8 @@
             logdir: "/home/coder/jcqquev/ansible/code-server-local/outputs/logs" 
             filter: "<routing-instances><instance><name>table-name</name></instance></routing-instances>"
             provider:                                                                                    
-              user: "{{ NVS_username }}"                                  
-              passwd: "{{ NVS_password }}"          
+              user: "{{ # }}"                                  
+              passwd: "{{ # }}"          
               port: '830'              
           register: bgp_config1
           notify: config_changed
@@ -72,8 +72,8 @@
             logdir: "/home/coder/jcqquev/ansible/code-server-local/outputs/logs"  
             filter: "<routing-instances><instance><name>table-name</name></instance></routing-instances>" 
             provider:                                                                                    
-              user: "{{ NVS_username }}"                                  
-              passwd: "{{ NVS_password }}"           
+              user: "{{ # }}"                                  
+              passwd: "{{ # }}"           
               port: '830'              
           register: bgp_config2
           notify: config_changed
@@ -118,8 +118,8 @@
             logdir: "/home/coder/jcqquev/ansible/code-server-local/outputs/logs" 
             filter: "<routing-instances><instance><name>table-name</name></instance></routing-instances>"  
             provider:                                                                                    
-              user: "{{ NVS_username }}"                                 
-              passwd: "{{ NVS_password }}"           
+              user: "{{ # }}"                                 
+              passwd: "{{ # }}"           
               port: '830'              
           register: bgp_config3
           notify: config_changed

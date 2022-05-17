@@ -4,7 +4,7 @@
   connection: local
   gather_facts: no
   
-  hosts: Edge_Routers_Internet_RTI_Junos
+  hosts: #
 
   collections:
     - juniper.device

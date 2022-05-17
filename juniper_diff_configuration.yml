@@ -16,8 +16,8 @@
              - "show configuration | display set"
            provider:                                                    
              host: "{{ ansible_host }}"                                 
-             user: "{{ username_var}}"                              
-             password: "{{ password_var }}"           
+             user: "{{ # }}"                              
+             password: "{{ # }}"           
            dest: "{{ file_1 }}"
 
        - name: "Task 2: Generate diff between New vs Old device"

@@ -35,7 +35,7 @@
             dest_dir: "/home/coder/jcqquev/ansible/code-server-local/outputs/configs" 
             logdir: "/home/coder/jcqquev/ansible/code-server-local/outputs/logs"   
             provider:                                                                                    
-              user: "{{ local_usernamee }}"                                 
+              user: "{{ local_username }}"                                 
               passwd: "{{ local_password }}"
               port: '830'              
           register: bgp_config

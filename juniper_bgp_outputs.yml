@@ -3,8 +3,7 @@
 - name: collect bgp peering information 
   connection: local
   gather_facts: no
-  hosts:
-    # 
+  hosts: #
   collections:
     - juniper.device
 

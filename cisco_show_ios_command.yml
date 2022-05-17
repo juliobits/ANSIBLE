@@ -1,7 +1,7 @@
 ---
 
 - name: Get device uptime
-  hosts: #
+  hosts: LAB_GNS3
   connection: local
   gather_facts: no
    
@@ -13,9 +13,9 @@
       wait_for: result[0] contains IOS
 
       provider:
-        host: "{{ ansible_host }}"
-        username: "{{ NVS_username }}"
-        password: "{{ NVS_password }}"
+        host: "{{ # }}"
+        username: "{{ # }}"
+        password: "{{ # }}"
         timeout: 30
         
     register: version

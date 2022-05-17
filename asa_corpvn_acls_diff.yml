@@ -41,7 +41,7 @@
 
 - name: "task2:Compare ACLs"
   hosts: 
-    - all,!houston
+    - all,!"name-excluded"
   order: sorted
   connection: local
   gather_facts: no
