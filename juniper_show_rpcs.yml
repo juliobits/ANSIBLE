@@ -22,8 +22,8 @@
             
     
             provider:                                                    # This is the logging settings for each device
-              host: "{{ ansible_host }}"                                 #  IÂ´ve created a group_vars called vars.yml where they are stored
-              user: "{{ NVS_username }}"                                 # Also iÂ´ve encrypted this sensitive info inside of the vault.yml
+              host: "{{ ansible_host }}"                                 #  I´ve created a group_vars called vars.yml where they are stored
+              user: "{{ NVS_username }}"                                 # Also i´ve encrypted this sensitive info inside of the vault.yml
               password: "{{ NVS_password }}"                             # This file is called vault, itÂ´s for save sensitive data as passwords usernames or whatever you need to encrypt
           
           register: bgp_info                                             # Then after you have the info from the rpc you need to save inside of a local variable
@@ -41,14 +41,14 @@
     
         - name: "Task 4: Creating a folder to store BGP info outputs"    # This task is to create a folder 
           file:
-            path: "outputs/shows"                                     # this is the name for the folder by default it will be stored on the root tree
+            path: "outputs/shows"                                        # this is the name for the folder by default it will be stored on the root tree
             state: directory                                             # To give it a state of this folder 
           run_once: true                                                 # to just create 1 only folder so when you applied multiple times this playbook
                                                                          # this wonÂ´t create another folder again
         - name: "Task 5: Creating the files to store BGP info outputs"   # Final task to create the files from each device
           copy:        
             content: "{{ pretty_config.xmlstring }}"                     # you are merging the bgp_info local variable with pretty_config local variable
-            dest: "shows/{{ inventory_hostname }}-shows-rpc.xml"        # with that you are reshaping the content after you drop it to the files.
+            dest: "shows/{{ inventory_hostname }}-shows-rpc.xml"         # with that you are reshaping the content after you drop it to the files.
                                                                          # finally you are locating the files to in which folder will be saved
                                                                          # we will save it on the previous folder created on the task 4 outputs_bgp_info
                                                                          # finally  with that ansible variable called inventory_hostname 

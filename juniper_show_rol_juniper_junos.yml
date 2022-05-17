@@ -35,7 +35,7 @@
 
           provider:                                                    
             host: "{{ ansible_host }}"                                 
-            user: "{{ SRX_username }}"                                
+            user: "{{ local_username }}"                                
             password: "{{ SRX_password }}" 
           
           dest: "/home/coder/jcqquev/ansible/code-server-local/outputs/shows/{{ inventory_hostname }}-show.txt"   
